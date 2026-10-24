@@ -1,0 +1,21 @@
+[tool.pyrefly]
+search-path = [
+    ".",
+    "bdpratico",
+    "BigData-env/lib/python3.14/site-packages"
+]
+site-package-path = [
+    "BigData-env/lib/python3.14/site-packages"
+]
+replace-untyped-imports-with-any = [
+    "django.*"
+]
+
+[tool.pyright]
+venvPath = "."
+venv = "BigData-env"
+extraPaths = [
+    "BigData-env/lib/python3.14/site-packages",
+    "bdpratico"
+]
+reportMissingTypeStubs = false

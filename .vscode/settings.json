@@ -1,0 +1,15 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/BigData-env/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/BigData-env/lib/python3.14/site-packages",
+    "${workspaceFolder}/bdpratico"
+  ],
+  "python.autoComplete.extraPaths": [
+    "${workspaceFolder}/BigData-env/lib/python3.14/site-packages",
+    "${workspaceFolder}/bdpratico"
+  ],
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportMissingTypeStubs": "none"
+  }
+}
