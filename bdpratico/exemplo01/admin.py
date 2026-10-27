@@ -25,7 +25,7 @@ class PessoaCustomizado(admin.ModelAdmin):
     list_display = ('nome', 'email', 'celular', 'funcao', 'ativo', 'calcula_idade')
     list_filter = ('funcao', 'ativo')
     actions = [habilitar_pessoas, desabilitar_pessoas]
-    
+
     @admin.display(description='Idade')
     def calcula_idade(self, obj: pessoa) -> Union[int, str]:
         """Calcula a idade da pessoa com base na data de nascimento.

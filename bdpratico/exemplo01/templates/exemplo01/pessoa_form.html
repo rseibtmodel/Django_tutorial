@@ -1,0 +1,64 @@
+{% load static %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+<!doctype html>
+<html>
+
+<head>
+    <title>Form de Pessoas</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <center>
+                <p>bdpratico\exemplo01\templates\exemplo01\pessoa_form.html</p>
+                <img src="{% static 'pessoa.png' %}" class="img-fluid" alt="Teste" width="15%">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="row" style="line-height: 1;">
+                            <div class="col-md-1 col-sm-1 col-xs-1"></div>
+                            <div class="col-md-8 col-sm-12 col-xs-12">
+                                {% bootstrap_field form.nome placeholder='' %}
+                            </div>
+                        </div>
+                        <div class="row" style="line-height: 1;">
+                            <div class="col-md-1 col-sm-1 col-xs-1"></div>
+                            <div class="col-md-8 col-sm-12 col-xs-12">
+                                {% bootstrap_field form.email placeholder='' style='height:15px;' %}
+                            </div>
+                        </div>
+                        <div class="row" style="line-height: 1;">
+                            <div class="col-md-1 col-sm-1 col-xs-1"></div>
+                            <div class="col-md-4 col-sm-4 col-xs-4">
+                                {% bootstrap_field form.celular placeholder='' %}
+                            </div>
+                            <div class="col-md-4 col-sm-4 col-xs-4">
+                                {% bootstrap_field form.funcao placeholder='' %}
+                            </div>
+                        </div>
+                        <div class="row" style="line-height: 1;">
+                            <div class="col-md-1 col-sm-1 col-xs-1"></div>
+                            <div class="col-md-4 col-sm-4 col-xs-4">
+                                {% bootstrap_field form.nascimento placeholder='' %}
+                            </div>
+                            <div class="col-md-1 col-sm-1 col-xs-1"><br><br>
+                                {% bootstrap_field form.ativo placeholder='' %}
+                            </div>
+                            <div class="col-md-1 col-sm-1 col-xs-1"><br><br>
+                            </div>
+                            <div class="col-md-1 col-sm-1 col-xs-1"><br>
+                                <button type="submit" class="btn btn-primary">Salvar</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </center>
+        </div>
+    </div>
+</body>
+
+</html>

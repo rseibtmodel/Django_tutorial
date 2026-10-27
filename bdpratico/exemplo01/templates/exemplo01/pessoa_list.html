@@ -1,0 +1,26 @@
+{% load static %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+{% load render_table from django_tables2 %}
+<!doctype html>
+<html>
+
+<head>
+    <title>Lista de Pessoas</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <center>
+                <p>bdpratico\exemplo01\templates\exemplo01\pessoa_list.html</p>
+                <img src="{% static 'pessoa.png' %}" class="img-fluid" alt="Teste" width="15%">
+                {% render_table object_list %}
+            </center>
+        </div>
+    </div>
+</body>
+
+</html>
