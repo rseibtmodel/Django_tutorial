@@ -11,3 +11,22 @@ class pessoa(models.Model):
         return self.nome
     class Meta:
         ordering = ['nome', 'funcao',]
+    
+class procedimento(models.Model):
+    descricao = models.CharField(max_length=50, null=False, blank=False, verbose_name='Descricao')
+    cid = models.CharField(max_length=20, null=False, blank=False, verbose_name='CID')
+    valor = models.FloatField(null=True, blank=True, default=None, verbose_name='Valor')
+    def __str__(self):
+        return self.descricao
+    class Meta:
+        ordering = ['descricao']
+
+class procedimento_executado(models.Model):
+    pessoa = models.ForeignKey(pessoa, on_delete=models.CASCADE)
+    procedimento = models.ForeignKey(procedimento, on_delete=models.CASCADE)
+    obs = models.CharField(max_length=50, null=False, blank=False, verbose_name='Obs')
+    quantidade = models.FloatField(null=True, blank=True, default=None, verbose_name='Quantidade')
+    def __str__(self):
+        return self.obs
+    class Meta:
+        ordering = ['pessoa', 'procedimento']

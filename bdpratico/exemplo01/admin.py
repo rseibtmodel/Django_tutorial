@@ -4,7 +4,7 @@ from typing import Union
 
 from django.contrib import admin
 
-from .models import pessoa
+from .models import pessoa, procedimento, procedimento_executado
 
 
 @admin.action(description="Habilitar Registros Selecionados")
@@ -50,3 +50,5 @@ class PessoaCustomizado(admin.ModelAdmin):
 
 
 admin.site.register(pessoa, PessoaCustomizado)
+admin.site.register(procedimento)
+admin.site.register(procedimento_executado)
