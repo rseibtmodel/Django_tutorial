@@ -18,6 +18,9 @@ db.sqlite3
 db.sqlite3-journal
 media/
 staticfiles/
+docs_chat/
+*.env
+chroma_data/
 
 # Sistema Operacional (macOS)
 .DS_Store

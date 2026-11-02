@@ -1,13 +1,16 @@
 {
   "python.defaultInterpreterPath": "BigData-env/bin/python",
+  "python.locator": "js",
   "python.terminal.activateEnvironment": true,
   "python.analysis.extraPaths": [
     "BigData-env/lib/python3.14/site-packages",
-    "bdpratico"
+    "bdpratico",
+    "projeto_testes"
   ],
   "python.autoComplete.extraPaths": [
     "BigData-env/lib/python3.14/site-packages",
-    "bdpratico"
+    "bdpratico",
+    "projeto_testes"
   ],
   "python.analysis.diagnosticSeverityOverrides": {
     "reportMissingTypeStubs": "none"

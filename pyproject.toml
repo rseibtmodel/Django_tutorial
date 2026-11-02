@@ -2,6 +2,7 @@
 search-path = [
     ".",
     "bdpratico",
+    "projeto_testes",
     "BigData-env/lib/python3.14/site-packages"
 ]
 site-package-path = [
@@ -16,6 +17,7 @@ venvPath = "."
 venv = "BigData-env"
 extraPaths = [
     "BigData-env/lib/python3.14/site-packages",
-    "bdpratico"
+    "bdpratico",
+    "projeto_testes"
 ]
 reportMissingTypeStubs = false

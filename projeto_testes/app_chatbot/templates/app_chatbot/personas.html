@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Personas & Perfil // Workspace</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #06090e;
+            color: #e6edf3;
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+            min-height: 100vh;
+        }
+        .terminal-panel {
+            background-color: #0d1117;
+            border: 1px solid rgba(0, 255, 102, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 0 25px rgba(0, 255, 102, 0.05);
+        }
+        .terminal-header {
+            background-color: #090d13;
+            border-bottom: 1px solid rgba(0, 255, 102, 0.2);
+            padding: 12px 20px;
+            color: #00ff66;
+            font-size: 0.90rem;
+        }
+        .terminal-input {
+            background-color: #090d13 !important;
+            border: 1px solid rgba(0, 255, 102, 0.3) !important;
+            color: #00ff66 !important;
+            font-family: inherit;
+        }
+        .terminal-input:focus {
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.3) !important;
+        }
+        .btn-neon {
+            background-color: #00ff66;
+            color: #06090e;
+            font-weight: 700;
+            border: none;
+            letter-spacing: 0.5px;
+        }
+        .btn-neon:hover {
+            background-color: #00cc52;
+            color: #000000;
+        }
+        .card-persona {
+            background-color: #090d13;
+            border: 1px solid rgba(0, 255, 102, 0.2);
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        .card-persona:hover {
+            border-color: #00ff66;
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.1);
+        }
+        .avatar-circle {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #00ff66;
+            background-color: #161b22;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #00ff66;
+        }
+        .avatar-lg {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #00ff66;
+            background-color: #161b22;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #00ff66;
+        }
+        .nav-tabs .nav-link {
+            color: #8b949e;
+            border: 1px solid transparent;
+            font-size: 0.85rem;
+        }
+        .nav-tabs .nav-link.active {
+            color: #00ff66;
+            background-color: #090d13;
+            border-color: rgba(0, 255, 102, 0.3) rgba(0, 255, 102, 0.3) #090d13;
+            font-weight: 600;
+        }
+        .preview-pane {
+            background-color: #090d13;
+            border: 1px dashed rgba(0, 255, 102, 0.3);
+            border-radius: 6px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body class="p-3">
+    <div class="container-fluid p-0" style="max-width: 1200px;">
+        <div class="terminal-panel">
+            <!-- Header do Workspace -->
+            <div class="terminal-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <span style="color: #00ff66; font-size: 1rem;">&gt;_</span>
+                    <span class="fw-bold">WORKSPACE // GERENCIADOR DE PERSONAS &amp; PERFIL</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{% url 'app_chatbot:painel' %}" class="btn btn-sm btn-outline-success font-monospace py-1 px-3">
+                        &lt; VOLTAR AO CHAT
+                    </a>
+                    <a href="{% url 'app_chatbot:logout' %}" class="btn btn-sm btn-outline-danger font-monospace py-1 px-2">
+                        [SAIR]
+                    </a>
+                </div>
+            </div>
+
+            <!-- Abas de Navegação -->
+            <div class="p-3">
+                <ul class="nav nav-tabs border-secondary border-opacity-25 mb-4" id="personaTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link font-monospace {% if not persona_em_edicao %}active{% endif %}" id="galeria-tab" data-bs-toggle="tab" data-bs-target="#galeria" type="button" role="tab">
+                            🎭 MINHAS PERSONAS ({{ personas.count }})
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link font-monospace {% if persona_em_edicao %}active{% endif %}" id="editor-tab" data-bs-toggle="tab" data-bs-target="#editor" type="button" role="tab">
+                            ➕ {% if persona_em_edicao %}EDITAR PERSONA{% else %}CRIAR NOVA PERSONA{% endif %}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link font-monospace" id="perfil-tab" data-bs-toggle="tab" data-bs-target="#perfil" type="button" role="tab">
+                            👤 MEU PERFIL DE OPERADOR
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Feedback do Sistema / Mensagens Django -->
+                {% if messages %}
+                <div class="mb-3">
+                    {% for msg in messages %}
+                    <div class="alert {% if msg.tags == 'error' %}alert-danger border-danger text-danger{% else %}alert-success border-success text-success{% endif %} bg-black bg-opacity-75 alert-dismissible fade show font-monospace py-2 px-3 small border" role="alert">
+                        <span>&gt; [{{ msg.tags|upper }}]: {{ msg }}</span>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="tab-content" id="personaTabsContent">
+                    <!-- ABA 1: GALERIA DE PERSONAS -->
+                    <div class="tab-pane fade {% if not persona_em_edicao %}show active{% endif %}" id="galeria" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-secondary small font-monospace">&gt; Selecione uma persona para editar ou utilize no chat ativo.</span>
+                            <button class="btn btn-sm btn-neon font-monospace px-3" onclick="abrirNovoEditor()">+ NOVA PERSONA</button>
+                        </div>
+
+                        <div class="row g-3">
+                            {% for p in personas %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card-persona p-3 h-100 d-flex flex-column justify-content-between">
+                                    <div>
+                                        <div class="d-flex align-items-center gap-3 mb-3">
+                                            {% if p.foto %}
+                                            <img src="{{ p.foto.url }}" alt="{{ p.nome }}" class="avatar-circle">
+                                            {% else %}
+                                            <div class="avatar-circle">{{ p.nome|slice:":2"|upper }}</div>
+                                            {% endif %}
+                                            <div class="text-truncate">
+                                                <div class="d-flex align-items-center gap-1">
+                                                    <span class="fw-bold text-success text-truncate">{{ p.nome }}</span>
+                                                    {% if p.is_sistema %}
+                                                    <span class="badge bg-black text-secondary border border-secondary border-opacity-25" style="font-size: 0.65rem;">SISTEMA</span>
+                                                    {% else %}
+                                                    <span class="badge bg-black text-warning border border-warning border-opacity-25" style="font-size: 0.65rem;">CUSTOM</span>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="text-secondary small font-monospace text-truncate">{{ p.profissao_cargo|default:"Assistente Especialista" }}</div>
+                                                <div class="text-light small mt-1" style="font-size: 0.72rem;">{{ p.get_tom_de_voz_display }}</div>
+                                            </div>
+                                        </div>
+
+                                        <p class="text-secondary small font-monospace mb-2" style="font-size: 0.78rem; min-height: 38px;">
+                                            {{ p.descricao_curta|default:"Sem descrição informada."|truncatechars:90 }}
+                                        </p>
+
+                                        <div class="d-flex flex-wrap gap-1 mb-3 font-monospace" style="font-size: 0.70rem;">
+                                            {% if p.idade %}
+                                            <span class="badge bg-dark text-secondary border border-secondary border-opacity-25">{{ p.idade }} anos</span>
+                                            {% endif %}
+                                            {% if p.escolaridade != 'nao_especificado' %}
+                                            <span class="badge bg-dark text-secondary border border-secondary border-opacity-25">{{ p.get_escolaridade_display }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-25">
+                                        {% if not p.is_sistema %}
+                                        <div class="d-flex gap-2">
+                                            <a href="?editar={{ p.id }}" class="btn btn-sm btn-outline-success font-monospace py-0 px-2" style="font-size: 0.75rem;">
+                                                EDITAR
+                                            </a>
+                                            <form method="post" action="{% url 'app_chatbot:deletar_persona' p.id %}" class="d-inline" onsubmit="return confirm('Excluir esta persona customizada permanentemente?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-outline-danger font-monospace py-0 px-2" style="font-size: 0.75rem;">
+                                                    EXCLUIR
+                                                </button>
+                                            </form>
+                                        </div>
+                                        {% else %}
+                                        <span class="text-secondary small font-monospace" style="font-size: 0.72rem;">[Preset protegido]</span>
+                                        {% endif %}
+
+                                        <a href="{% url 'app_chatbot:painel' %}" class="btn btn-sm btn-neon font-monospace py-0 px-2" style="font-size: 0.75rem;">
+                                            USAR NO CHAT
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- ABA 2: EDITOR SPLIT-SCREEN DE PERSONA -->
+                    <div class="tab-pane fade {% if persona_em_edicao %}show active{% endif %}" id="editor" role="tabpanel">
+                        <div class="row g-4">
+                            <!-- Coluna Esquerda: Live Preview Card -->
+                            <div class="col-lg-4">
+                                <div class="preview-pane sticky-top" style="top: 20px;">
+                                    <div class="text-success small fw-bold font-monospace mb-3">&gt;_ PREVIEW EM TEMPO REAL</div>
+
+                                    <div class="d-flex flex-column align-items-center text-center mb-3">
+                                        <div id="preview-avatar" class="avatar-lg mb-2">
+                                            {% if persona_em_edicao and persona_em_edicao.foto %}
+                                            <img src="{{ persona_em_edicao.foto.url }}" alt="Avatar" class="avatar-lg">
+                                            {% else %}
+                                            <span id="preview-iniciais">IA</span>
+                                            {% endif %}
+                                        </div>
+                                        <h5 class="fw-bold text-success mb-1 font-monospace" id="preview-nome">{{ persona_em_edicao.nome|default:"Nome da Persona" }}</h5>
+                                        <div class="text-secondary small font-monospace" id="preview-cargo">{{ persona_em_edicao.profissao_cargo|default:"Cargo / Especialidade" }}</div>
+                                    </div>
+
+                                    <div class="p-2 rounded bg-dark border border-secondary border-opacity-25 mb-3 font-monospace" style="font-size: 0.75rem;">
+                                        <div class="text-secondary mb-1">DEMOGRAFIA:</div>
+                                        <div id="preview-demo" class="text-light">
+                                            {% if persona_em_edicao.idade %}{{ persona_em_edicao.idade }} anos | {% endif %}
+                                            {{ persona_em_edicao.get_escolaridade_display|default:"Escolaridade" }}
+                                        </div>
+                                        <div class="text-secondary mt-2 mb-1">TOM DE VOZ:</div>
+                                        <div id="preview-tom" class="text-neon fw-bold">{{ persona_em_edicao.get_tom_de_voz_display|default:"Objetivo & Direto" }}</div>
+                                    </div>
+
+                                    <div class="text-secondary small font-monospace" style="font-size: 0.72rem;">
+                                        <em>"As diretrizes e o backstory serão incorporados de forma fluida nas respostas do Gemini."</em>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Coluna Direita: Formulário de Configuração Completo -->
+                            <div class="col-lg-8">
+                                <form method="post" action="{% url 'app_chatbot:salvar_persona' %}" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    {% if persona_em_edicao %}
+                                    <input type="hidden" name="persona_id" value="{{ persona_em_edicao.id }}">
+                                    {% endif %}
+
+                                    <div class="card-persona p-4">
+                                        <h6 class="text-success fw-bold font-monospace mb-3 pb-2 border-bottom border-success border-opacity-25">
+                                            1. DADOS DE IDENTIDADE
+                                        </h6>
+                                        <div class="row g-3 mb-4">
+                                            <div class="col-md-7">
+                                                <label class="form-label text-secondary small font-monospace">Nome da Persona *</label>
+                                                <input type="text" name="nome" id="input-nome" class="form-control form-control-sm terminal-input font-monospace" 
+                                                       value="{{ persona_em_edicao.nome|default:'' }}" required maxlength="100" placeholder="Ex: Dra. Helena Rocha" oninput="atualizarPreview()">
+                                            </div>
+                                            <div class="col-md-5">
+                                                <label class="form-label text-secondary small font-monospace">Foto / Avatar (máx 2MB)</label>
+                                                <input type="file" name="foto" id="input-foto" class="form-control form-control-sm terminal-input font-monospace" accept="image/*" onchange="previewImagem(event)">
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label text-secondary small font-monospace">Descrição Curta (Resumo de 1 linha)</label>
+                                                <input type="text" name="descricao_curta" class="form-control form-control-sm terminal-input font-monospace" 
+                                                       value="{{ persona_em_edicao.descricao_curta|default:'' }}" maxlength="255" placeholder="Ex: Especialista sênior em bioética, governança de IA e regulação algorítmica.">
+                                            </div>
+                                        </div>
+
+                                        <h6 class="text-success fw-bold font-monospace mb-3 pb-2 border-bottom border-success border-opacity-25">
+                                            2. DEMOGRAFIA &amp; FORMAÇÃO
+                                        </h6>
+                                        <div class="row g-3 mb-4">
+                                            <div class="col-md-3">
+                                                <label class="form-label text-secondary small font-monospace">Idade</label>
+                                                <input type="number" name="idade" id="input-idade" class="form-control form-control-sm terminal-input font-monospace" 
+                                                       value="{{ persona_em_edicao.idade|default:'' }}" min="0" max="150" placeholder="Ex: 42" oninput="atualizarPreview()">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label text-secondary small font-monospace">Gênero / Identidade</label>
+                                                <select name="sexo" class="form-select form-select-sm terminal-input font-monospace">
+                                                    {% for chave, label in sexo_choices %}
+                                                    <option value="{{ chave }}" {% if persona_em_edicao.sexo == chave %}selected{% endif %}>{{ label }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <label class="form-label text-secondary small font-monospace">Nível de Escolaridade</label>
+                                                <select name="escolaridade" id="input-escolaridade" class="form-select form-select-sm terminal-input font-monospace" onchange="atualizarPreview()">
+                                                    {% for chave, label in escolaridade_choices %}
+                                                    <option value="{{ chave }}" {% if persona_em_edicao.escolaridade == chave %}selected{% endif %}>{{ label }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label text-secondary small font-monospace">Profissão / Cargo / Especialidade</label>
+                                                <input type="text" name="profissao_cargo" id="input-cargo" class="form-control form-control-sm terminal-input font-monospace" 
+                                                       value="{{ persona_em_edicao.profissao_cargo|default:'' }}" maxlength="100" placeholder="Ex: Pesquisadora e Consultora de Segurança" oninput="atualizarPreview()">
+                                            </div>
+                                        </div>
+
+                                        <h6 class="text-success fw-bold font-monospace mb-3 pb-2 border-bottom border-success border-opacity-25">
+                                            3. COMPORTAMENTO, TOM &amp; BACKSTORY
+                                        </h6>
+                                        <div class="row g-3 mb-4">
+                                            <div class="col-12">
+                                                <label class="form-label text-secondary small font-monospace">Tom de Voz Primário</label>
+                                                <select name="tom_de_voz" id="input-tom" class="form-select form-select-sm terminal-input font-monospace" onchange="atualizarPreview()">
+                                                    {% for chave, label in tom_de_voz_choices %}
+                                                    <option value="{{ chave }}" {% if persona_em_edicao.tom_de_voz == chave %}selected{% endif %}>{{ label }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label text-secondary small font-monospace">Histórico &amp; Backstory (A história de vida do personagem)</label>
+                                                <textarea name="historia_background" rows="3" class="form-control form-control-sm terminal-input font-monospace" 
+                                                          placeholder="Ex: Formada pela USP com 15 anos de atuação hospitalar. Conhecida por sua postura analítica e apego a evidências empíricas...">{{ persona_em_edicao.historia_background|default:'' }}</textarea>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label text-secondary small font-monospace">Diretrizes de Comportamento (Instruções do System Prompt)</label>
+                                                <textarea name="diretrizes_comportamento" rows="4" class="form-control form-control-sm terminal-input font-monospace" 
+                                                          placeholder="Ex: - Sempre critique premissas fracas antes de aprovar.&#10;- Use citações e analogias cirúrgicas.&#10;- Nunca responda em tom genérico.">{{ persona_em_edicao.diretrizes_comportamento|default:'' }}</textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-end gap-2 pt-3 border-top border-secondary border-opacity-25">
+                                            <a href="{% url 'app_chatbot:gerenciar_personas' %}" class="btn btn-sm btn-outline-secondary font-monospace px-3">CANCELAR</a>
+                                            <button type="submit" class="btn btn-sm btn-neon font-monospace px-4">
+                                                💾 SALVAR PERSONA
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ABA 3: PERFIL DO OPERADOR (USUÁRIO) -->
+                    <div class="tab-pane fade" id="perfil" role="tabpanel">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <form method="post" action="{% url 'app_chatbot:salvar_perfil_usuario' %}" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="card-persona p-4">
+                                        <div class="d-flex align-items-center gap-4 mb-4 pb-3 border-bottom border-success border-opacity-25">
+                                            {% if perfil.foto %}
+                                            <img src="{{ perfil.foto.url }}" alt="{{ perfil.nome_exibicao }}" class="avatar-lg">
+                                            {% else %}
+                                            <div class="avatar-lg">{{ request.user.username|slice:":2"|upper }}</div>
+                                            {% endif %}
+                                            <div>
+                                                <h5 class="fw-bold text-success font-monospace mb-1">{{ perfil.nome_exibicao|default:request.user.username }}</h5>
+                                                <div class="text-secondary small font-monospace">&gt; Usuário: {{ request.user.username }} | {{ request.user.email|default:"Sem e-mail" }}</div>
+                                                <div class="text-secondary small font-monospace mt-1">Sua foto aparecerá nas bolhas de mensagem do chat.</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label text-secondary small font-monospace">Nome de Exibição</label>
+                                                <input type="text" name="nome_exibicao" class="form-control form-control-sm terminal-input font-monospace" 
+                                                       value="{{ perfil.nome_exibicao }}" placeholder="Ex: Rodrigo Model">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label text-secondary small font-monospace">Profissão / Ocupação</label>
+                                                <input type="text" name="profissao" class="form-control form-control-sm terminal-input font-monospace" 
+                                                       value="{{ perfil.profissao }}" placeholder="Ex: Desenvolvedor Python / Data Scientist">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label text-secondary small font-monospace">Data de Nascimento</label>
+                                                <input type="date" name="data_nascimento" class="form-control form-control-sm terminal-input font-monospace" 
+                                                       value="{{ perfil.data_nascimento|date:'Y-m-d'|default:'' }}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label text-secondary small font-monospace">Atualizar Foto de Perfil (máx 2MB)</label>
+                                                <input type="file" name="foto" class="form-control form-control-sm terminal-input font-monospace" accept="image/*">
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label text-secondary small font-monospace">Bio / Resumo Pessoal (A persona usará isso para adaptar as respostas a você)</label>
+                                                <textarea name="bio" rows="3" class="form-control form-control-sm terminal-input font-monospace" 
+                                                          placeholder="Conte um pouco sobre suas preferências, estilo de trabalho ou projetos atuais...">{{ perfil.bio }}</textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-end gap-2 pt-4 mt-3 border-top border-secondary border-opacity-25">
+                                            <button type="submit" class="btn btn-sm btn-neon font-monospace px-4">
+                                                💾 SALVAR MEU PERFIL
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function abrirNovoEditor() {
+            const triggerEl = document.querySelector('#editor-tab');
+            const tab = new bootstrap.Tab(triggerEl);
+            tab.show();
+        }
+
+        function atualizarPreview() {
+            const nomeInput = document.getElementById("input-nome").value.trim();
+            const cargoInput = document.getElementById("input-cargo").value.trim();
+            const idadeInput = document.getElementById("input-idade").value.trim();
+            const escSelect = document.getElementById("input-escolaridade");
+            const tomSelect = document.getElementById("input-tom");
+
+            const previewNome = document.getElementById("preview-nome");
+            const previewCargo = document.getElementById("preview-cargo");
+            const previewDemo = document.getElementById("preview-demo");
+            const previewTom = document.getElementById("preview-tom");
+            const previewIniciais = document.getElementById("preview-iniciais");
+
+            previewNome.textContent = nomeInput || "Nome da Persona";
+            previewCargo.textContent = cargoInput || "Cargo / Especialidade";
+
+            if (previewIniciais) {
+                previewIniciais.textContent = (nomeInput.slice(0, 2) || "IA").toUpperCase();
+            }
+
+            let demoTxt = "";
+            if (idadeInput) demoTxt += `${idadeInput} anos | `;
+            demoTxt += escSelect.options[escSelect.selectedIndex]?.text || "";
+            previewDemo.textContent = demoTxt;
+
+            previewTom.textContent = tomSelect.options[tomSelect.selectedIndex]?.text || "";
+        }
+
+        function previewImagem(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewAvatar = document.getElementById("preview-avatar");
+                previewAvatar.innerHTML = `<img src="${e.target.result}" class="avatar-lg" alt="Preview">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>
+

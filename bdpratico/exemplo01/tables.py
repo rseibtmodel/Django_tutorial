@@ -13,5 +13,5 @@ class pessoa_table(tables.Table):
     class Meta:
         model = pessoa
         attrs = {"class": "table thead-light table-striped table-hover"}
-        template_name = "django_tables2/bootstrap4.html"
+        template_name = "django_tables2/bootstrap5.html"
         fields = ('nome', 'email', 'celular', 'funcao', 'nascimento', 'ativo')

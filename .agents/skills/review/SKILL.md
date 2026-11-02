@@ -14,6 +14,7 @@ Esta skill orquestra o processo de auditoria e revisão de código sob a ótica 
 
 - **Comando de Acionamento:** `/review <caminho/do/arquivo.py>` (aceita múltiplos caminhos separados por espaço).
 - **Modo Consultivo Obrigatório:** **NUNCA** aplique patches, refatorações ou utilize ferramentas de edição de arquivos (`replace_file_content`, `write_to_file`, etc.) durante ou após a revisão sem uma ordem expressa, explícita e inequívoca do usuário no chat.
+- **Proibição de Encaminhamento Direto ao Coder:** O Reviewer **JAMAIS** direciona tarefas ou solicitações de correção diretamente ao Estagiário Codificador (`/coder`). Todo o resultado da auditoria deve ser repassado ao Guardião da Documentação (`/doc_master`) para catalogação em `projeto_testes/reviews/` e desdobramento em propostas formais em `reviews/action/`.
 - **Ambiente:** Sandbox total. Não economize críticas nem suavize o diagnóstico de débitos técnicos.
 
 ---

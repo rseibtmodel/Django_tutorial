@@ -18,24 +18,26 @@ class pessoa_menu(SingleTableView):
     template_name = 'exemplo01/pessoa_menu.html'
 
 def index(request):
-    print("else")
-    usuario = request.POST.get('username')
-    senha = request.POST.get('password')
-    user = authenticate(username=usuario, password=senha)
-    if (user is not None):
-        login(request, user)
-        request.session['username'] = usuario
-        request.session['password'] = senha
-        request.session['usernamefull'] = (
-            user.get_full_name() if hasattr(user, "get_full_name") else user.get_username()
-        )
-        print(request.session['username'])
-        print(request.session['password'])
-        print(request.session['usernamefull'])
-        from django.shortcuts import redirect
-        return redirect('menu_alias')
-    else:
-        return render(request, 'index.html')
+    data = {}
+    data['msg'] = "Informe o Usuário e a Senha"
+    if request.method == 'POST':
+        usuario = request.POST.get('username')
+        senha = request.POST.get('password')
+        user = authenticate(username=usuario, password=senha)
+        if (user is not None):
+            login(request, user)
+            request.session['username'] = usuario
+            request.session['password'] = senha
+            request.session['usernamefull'] = user.get_full_name()
+            print(request.session['username'])
+            print(request.session['password'])
+            print(request.session['usernamefull'])
+            from django.shortcuts import redirect
+            return redirect('menu_alias')
+        else:
+            print("Usuário ou Senha Errado(s)")
+            data['msg'] = "Usuário ou Senha Errado(s)"
+    return render(request, 'index.html', data)
 
 
 #def index(request):
