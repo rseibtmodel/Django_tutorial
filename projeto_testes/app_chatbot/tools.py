@@ -232,6 +232,122 @@ def obter_ferramentas_para_sessao(sessao: SessaoChat) -> list[Callable[..., Any]
             f"- Documentos RAG ativos: {metricas.get('total_documentos', 0)}"
         )
 
+    def registrar_transacao_financeira(
+        tipo: str,
+        valor: str,
+        descricao: str,
+        categoria: str = "outros",
+        data_competencia: str = "",
+    ) -> str:
+        """Registra uma nova receita (crédito) ou despesa (débito) nas finanças do usuário autenticado.
+
+        Use esta ferramenta quando o usuário pedir para registrar, anotar, lançar ou salvar um gasto,
+        despesa, compra, receita, salário, pagamento ou ganho financeiro.
+
+        Args:
+            tipo: 'DESPESA' para saídas/gastos ou 'RECEITA' para entradas/ganhos.
+            valor: Valor monetário como texto (ex: '45.00', '150,50', '1200').
+            descricao: Descrição detalhada do que foi comprado ou recebido.
+            categoria: Categoria opcional (ex: alimentacao, moradia, transporte, lazer, salario, freela).
+            data_competencia: Data opcional no formato AAAA-MM-DD (se omitida, usa a data de hoje).
+
+        Returns:
+            str: Confirmação contábil do registro com ID e valor ou mensagem de erro.
+        """
+        logger.info("Ferramenta 'registrar_transacao_financeira' invocada para sessao %s", sessao.id)
+        if not sessao.usuario:
+            return "Erro: Operador não autenticado (sessão anônima). Impossível registrar finanças."
+
+        try:
+            from app_financas.services import criar_lancamento
+            lancamento = criar_lancamento(
+                usuario=sessao.usuario,
+                tipo=tipo,
+                valor=valor,
+                descricao=descricao,
+                categoria=categoria,
+                data_competencia=data_competencia if data_competencia else None,
+            )
+            sinal = "+" if lancamento.tipo == lancamento.TIPO_RECEITA else "-"
+            return (
+                f"Transação contábil registrada com sucesso no banco de dados local!\n"
+                f"- ID: #{lancamento.id}\n"
+                f"- Tipo: {lancamento.tipo}\n"
+                f"- Valor: {sinal}R$ {lancamento.valor:.2f}\n"
+                f"- Categoria: {lancamento.categoria}\n"
+                f"- Descrição: {lancamento.descricao}\n"
+                f"- Data de Competência: {lancamento.data_competencia.strftime('%d/%m/%Y')}"
+            )
+        except Exception as err:
+            logger.warning("Falha ao registrar transação financeira via ferramenta: %s", err)
+            return f"Erro ao registrar transação financeira: {str(err)}"
+
+    def consultar_extrato_financeiro(
+        ano: int = 0,
+        mes: int = 0,
+        categoria: str = "",
+    ) -> str:
+        """Consulta o extrato financeiro, saldo, total de receitas, despesas e lançamentos do usuário.
+
+        Use esta ferramenta quando o usuário perguntar quanto gastou no mês, qual é seu saldo,
+        seus maiores gastos, extrato, fluxo de caixa ou transações financeiras.
+
+        Args:
+            ano: Ano de competência numérico (ex: 2026). Se 0, utiliza o ano atual.
+            mes: Mês de competência (1 a 12). Se 0, utiliza o mês atual.
+            categoria: Filtro opcional por slug de categoria (ex: 'alimentacao', 'transporte').
+
+        Returns:
+            str: Resumo orçamentário do período com lista das transações encontradas.
+        """
+        logger.info("Ferramenta 'consultar_extrato_financeiro' invocada para sessao %s", sessao.id)
+        if not sessao.usuario:
+            return "Erro: Operador não autenticado (sessão anônima). Impossível consultar finanças."
+
+        try:
+            from app_financas.selectors import calcular_balanco_periodo, obter_extrato_mensal
+            agora = timezone.localdate()
+            ano_final = ano if ano > 0 else agora.year
+            mes_final = mes if 1 <= mes <= 12 else agora.month
+
+            balanco = calcular_balanco_periodo(
+                usuario=sessao.usuario,
+                ano=ano_final,
+                mes=mes_final,
+            )
+            lancamentos = obter_extrato_mensal(
+                usuario=sessao.usuario,
+                ano=ano_final,
+                mes=mes_final,
+                categoria=categoria if categoria else None,
+            )
+
+            linhas = [
+                f"=== BALANÇO FINANCEIRO LOCAL ({mes_final:02d}/{ano_final}) ===",
+                f"- Saldo Líquido: R$ {balanco['saldo_liquido']}",
+                f"- Total de Receitas (+): R$ {balanco['total_receitas']}",
+                f"- Total de Despesas (-): R$ {balanco['total_despesas']}",
+                f"- Taxa de Poupança: {balanco['taxa_poupanca']}%",
+                f"- Total de Lançamentos: {balanco['total_lancamentos']}",
+            ]
+
+            transacoes_recentes = list(lancamentos[:15])
+            if transacoes_recentes:
+                linhas.append("\nÚltimos Lançamentos:")
+                for l in transacoes_recentes:
+                    sinal = "+" if l.tipo == l.TIPO_RECEITA else "-"
+                    linhas.append(
+                        f"  * #{l.id} [{l.data_competencia.strftime('%d/%m')}] {sinal}R$ {l.valor:.2f} "
+                        f"({l.categoria}): {l.descricao}"
+                    )
+            else:
+                linhas.append("\n(Nenhum lançamento registrado nesta competência)")
+
+            return "\n".join(linhas)
+        except Exception as err:
+            logger.warning("Falha ao consultar extrato financeiro via ferramenta: %s", err)
+            return f"Erro ao consultar extrato financeiro: {str(err)}"
+
     # Retorna o catálogo completo de ferramentas ativas
     return [
         obter_data_e_hora_oficial,
@@ -239,5 +355,7 @@ def obter_ferramentas_para_sessao(sessao: SessaoChat) -> list[Callable[..., Any]
         consultar_documentos_sessao,
         obter_informacoes_sessao,
         consultar_telemetria_operador,
+        registrar_transacao_financeira,
+        consultar_extrato_financeiro,
     ]
 

@@ -32,6 +32,8 @@ Toda ferramenta implementada no módulo [`app_chatbot/tools.py`](file:///Users/r
 | [**TOOL-003**](file:///Users/rodrigomodel/agentes_inteligentes/projeto_testes/specs/tools/TOOL-003_consultar_documentos_sessao.md) | `consultar_documentos_sessao` | Lista os documentos e contagem de chunks indexados para RAG na sessão | Sessão Ativa | Isolamento anti-IDOR |
 | [**TOOL-004**](file:///Users/rodrigomodel/agentes_inteligentes/projeto_testes/specs/tools/TOOL-004_obter_informacoes_sessao.md) | `obter_informacoes_sessao` | Metadados da conversa ativa (título, persona ativa e contagem de turnos) | Sessão Ativa | Isolamento anti-IDOR |
 | [**TOOL-005**](file:///Users/rodrigomodel/agentes_inteligentes/projeto_testes/specs/tools/TOOL-005_consultar_telemetria_operador.md) | `consultar_telemetria_operador` | Métricas agregadas de consumo de tokens e estimativas de custo financeiro em USD | Usuário Autenticado | Trava multi-tenant de usuário |
+| [**TOOL-006**](file:///Users/rodrigomodel/agentes_inteligentes/projeto_testes/specs/tools/TOOL-006_registrar_transacao_financeira.md) | `registrar_transacao_financeira` | Registra receitas e despesas no SQLite local sob transação atômica | Usuário Autenticado | Trava anti-IDOR e sanitizador Decimal |
+| [**TOOL-007**](file:///Users/rodrigomodel/agentes_inteligentes/projeto_testes/specs/tools/TOOL-007_consultar_extrato_financeiro.md) | `consultar_extrato_financeiro` | Consulta saldo, receitas, despesas, taxa de poupança e lançamentos | Usuário Autenticado | Leitura pura CQRS e isolamento |
 
 ---
 

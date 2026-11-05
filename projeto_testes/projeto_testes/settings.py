@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app_testes',
     'app_chatbot',
+    'app_financas',
 ]
 
 MIDDLEWARE = [

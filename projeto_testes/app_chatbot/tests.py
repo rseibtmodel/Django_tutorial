@@ -964,7 +964,7 @@ class ChatbotAuthESessoesTestCase(TestCase):
         )
 
         ferramentas = obter_ferramentas_para_sessao(sessao=self.sessao_a)
-        self.assertEqual(len(ferramentas), 5)
+        self.assertEqual(len(ferramentas), 7)
 
         nomes_ferramentas = [f.__name__ for f in ferramentas]
         self.assertIn("obter_data_e_hora_oficial", nomes_ferramentas)
@@ -972,6 +972,8 @@ class ChatbotAuthESessoesTestCase(TestCase):
         self.assertIn("consultar_documentos_sessao", nomes_ferramentas)
         self.assertIn("obter_informacoes_sessao", nomes_ferramentas)
         self.assertIn("consultar_telemetria_operador", nomes_ferramentas)
+        self.assertIn("registrar_transacao_financeira", nomes_ferramentas)
+        self.assertIn("consultar_extrato_financeiro", nomes_ferramentas)
 
         # Executa ferramentas de sessão diretamente e valida retornos
         f_map = {f.__name__: f for f in ferramentas}

@@ -1,0 +1,52 @@
+{
+  "id": "ALQ-26110401",
+  "titulo_lapidado": "Console de Finanças Pessoais Soberanas & Telemetria Orçamentária Local",
+  "conceito_original": "Gerenciador de finanças pessoais integrado ao projeto_testes com lançamento rápido telegráfico e extratos de receitas/gastos",
+  "score": 9.3,
+  "classificacao": "ouro_puro",
+  "criterios_score": {
+    "singularidade": 9.4,
+    "assimetria_valor": 9.6,
+    "viabilidade_custo": 8.6,
+    "justificativa": "A proposta reúne singularidade estética e filosófica de alto impacto (viscosidade financeira no terminal), alavancagem 10x através de soberania absoluta de dados e integração com personas de IA locais, e viabilidade de implementação imediata sobre a infraestrutura Django/SQLite WAL já existente no repositório."
+  },
+  "nucleo_intransgressivel": "A percepção do dinheiro como energia vital e finita registrada via comandos telegráficos instantâneos em console dark, banindo a frieza de planilhas convencionais e a hipocrisia de fintechs de nuvem pública.",
+  "criticas_absorvidas": [
+    {
+      "especialista": "hacker",
+      "alerta_original": "Gargalo fatal de latência e burocracia de Open Banking corporativo",
+      "blindagem_incorporada": "Arquitetura 100% Local-First em SQLite com WAL mode e parser telegráfico CLI de linha única (/gasto e /receita), executando em menos de 15ms."
+    },
+    {
+      "especialista": "critic",
+      "alerta_original": "Exploit de valores negativos, imprecisão de float binário e perda de integridade por delete físico",
+      "blindagem_incorporada": "Sanitização determinística estrita no service via Decimal(0.01), teto positivo obrigatório e Soft Delete contábil com campo 'ativo'."
+    },
+    {
+      "especialista": "impact",
+      "alerta_original": "Risco de comoditização por planilhas ou apps convencionais",
+      "blindagem_incorporada": "Flywheel de inteligência privada: personas de IA locais cruzam o extrato sob demanda do operador, gerando alertas provocativos de queima orçamentária."
+    },
+    {
+      "especialista": "ux_designer",
+      "alerta_original": "Fricção de visualização e perda de ergonomia em consultas históricas",
+      "blindagem_incorporada": "Console em Terminal Dark com hotkeys de navegação mensal (F1/F2), sticky header de saldo e feedback de viscosidade luminosa (verde neon #00ff66 vs vermelho alerta)."
+    },
+    {
+      "especialista": "architect",
+      "alerta_original": "Risco de acoplamento excessivo com o app de chat existente",
+      "blindagem_incorporada": "Criação do app modular isolado 'app_financas' com CQRS puro (services/selectors) e exposição de Function Calling seguro via tools.py."
+    }
+  ],
+  "proposta_executavel": {
+    "resumo_arquitetural": "App modular Django 'app_financas' desacoplado, com model único canônico 'LancamentoFinanceiro' indexado, services atômicos, selectors puros e visualização em FBV Terminal Dark.",
+    "mecanica_operacional": "O operador registra transações via comando rápido no chat (/gasto 45.00 almoco) ou no input fixo da tela de extrato; a tabela atualiza instantaneamente com navegação por teclado e cálculo em tempo real de saldo e taxa de poupança.",
+    "stack_e_protocolos": "Python 3.12+, Django 5+, SQLite em WAL mode, Decimal determinístico, Bootstrap 5 Dark, CSS Monospace e Gemini Function Calling com decorators @require_POST/@require_GET."
+  },
+  "laboratorio_autopsia": {
+    "falha_estrutural_fatal": null,
+    "residuo_reaproveitavel": null
+  },
+  "proximo_passo_recomendado": "Solicitar expressamente ao Arquiteto (/architect) a elaboração da especificação técnica formal em specs/modulos_externos/gerenciador_financas_soberanas.md e a criação do ADR correspondente.",
+  "historico_iteracoes": []
+}

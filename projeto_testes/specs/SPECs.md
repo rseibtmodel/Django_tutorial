@@ -49,12 +49,15 @@ flowchart TD
         Template["template_nova_ideia.md"]
         CmdK["busca_semantica_global_cmdk.md"]
         PostgresPgvector["migracao_postgresql_pgvector.md"]
+        FinancasSoberanas["gerenciador_financas_soberanas_terminal.md"]
+        FaturasCartao["faturas_cartao_agendamento_multimes.md"]
         Arquivadas["📁 arquivadas/ (Ideias Promovidas)"]
     end
 
     subgraph Auditoria["🔍 reviews/"]
         RevCentral["Central de Auditorias"]
         RevChatbot["reviews/app_chatbot/ (Laudos do /review)"]
+        RevFinancas["reviews/app_financas/ (Laudos do /review)"]
     end
 
     subgraph ADRs["🏛️ architeture/"]
@@ -63,6 +66,8 @@ flowchart TD
         ADR3["adr_003_chromadb_local_vs_vector_cloud.md"]
         ADR4["adr_004_streaming_wsgi_e_persistencia_ai.md"]
         ADR5["adr_005_personas_dinamicas_e_prompt_assembling.md"]
+        ADR6["adr_006_app_financas_local_first_cqrs.md"]
+        ADR7["adr_007_faturas_cartao_agendamento_e_saldo_projetado.md"]
     end
 
     SPECs --> Roadmap & Arch
@@ -111,6 +116,8 @@ Repositório colaborativo para desenhar o futuro da aplicação:
 - [`template_nova_ideia.md`](./Ideias/template_nova_ideia.md): Modelo padrão para você documentar novas ideias de módulos.
 - [`busca_semantica_global_cmdk.md`](./Ideias/busca_semantica_global_cmdk.md): Modal global estilo Spotlight para varredura vetorial em todas as conversas.
 - [`migracao_postgresql_pgvector.md`](./Ideias/migracao_postgresql_pgvector.md): Transição arquitetural do ChromaDB local para PostgreSQL corporativo com pgvector.
+- [`gerenciador_financas_soberanas_terminal.md`](./Ideias/gerenciador_financas_soberanas_terminal.md): Gestão de finanças pessoais local-first, lançamentos telegráficos e extrato em Terminal Dark.
+- [`faturas_cartao_agendamento_multimes.md`](./Ideias/faturas_cartao_agendamento_multimes.md): Ingestão de faturas PDF, agendamento único no vencimento e projeção de saldo espectral.
 - `📁 arquivadas/`: Ideias aprovadas e implementadas no sistema.
 
 ### 6. 🏛️ Decisões Arquiteturais / ADRs (`specs/architeture/`)
@@ -120,6 +127,8 @@ Registros formais de decisões arquiteturais (Architecture Decision Records):
 - [`adr_003_chromadb_local_vs_vector_cloud.md`](./architeture/adr_003_chromadb_local_vs_vector_cloud.md): Uso de ChromaDB local para o MVP e plano para pgvector.
 - [`adr_004_streaming_wsgi_e_persistencia_ai.md`](./architeture/adr_004_streaming_wsgi_e_persistencia_ai.md): Decisões de streaming e anti-prompt poisoning.
 - [`adr_005_personas_dinamicas_e_prompt_assembling.md`](./architeture/adr_005_personas_dinamicas_e_prompt_assembling.md): Modelagem e compilação de personas dinâmicas.
+- [`adr_006_app_financas_local_first_cqrs.md`](./architeture/adr_006_app_financas_local_first_cqrs.md): Arquitetura do módulo de finanças local-first com CQRS e sanitização Decimal.
+- [`adr_007_faturas_cartao_agendamento_e_saldo_projetado.md`](./architeture/adr_007_faturas_cartao_agendamento_e_saldo_projetado.md): Bipartição de faturas de cartão, agendamento no vencimento e projeção de saldo.
 
 ### 7. 🔍 Central de Auditorias (`reviews/`)
 Pasta de governança das auditorias técnicas realizadas pelo **Tech Lead Reviewer (`/review`)**:

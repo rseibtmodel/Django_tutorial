@@ -27,6 +27,10 @@ timeline
         Busca Global Cmd+K : Varredura vetorial em todo o histórico
         Tool Calling & Agentes : Execução de código Python, busca web, integrações
         Migração pgvector : Transição do ChromaDB local para PostgreSQL corporativo
+    section Fase 5 (Concluída)
+        Finanças Soberanas no Terminal : Lançamentos telegráficos, extrato local, CQRS
+    section Fase 6 (Planejada / Futuro)
+        Faturas de Cartão & Saldo Espectral : Parser PDF local, modal HUD, agendamento no vencimento
 ```
 
 ---
@@ -66,6 +70,20 @@ timeline
 - [x] **Agentes Multi-Step com Tool Calling:** Capacidade do chatbot de rodar ferramentas tipadas (data/hora oficial, calculadora segura por AST, documentos RAG e telemetria). ➔ Consolidado em [`specs/modulos_internos/agentes_multi_step_tool_calling.md`](./modulos_internos/agentes_multi_step_tool_calling.md) (Ideia arquivada em [`specs/Ideias/arquivadas/agentes_multi_step_tool_calling.md`](./Ideias/arquivadas/agentes_multi_step_tool_calling.md))
 - [ ] **Hub Interativo de Ajuda, Ferramentas & Habilidades:** Modal HUD e atalho global para inspecionar e acionar ferramentas ativas, comandos slash e personas em tempo real. ➔ Associado a [`specs/Ideias/hub_capacidades_e_ajuda_interativo.md`](./Ideias/hub_capacidades_e_ajuda_interativo.md)
 - [ ] **Migração de ChromaDB para PostgreSQL + `pgvector`:** Unificação da persistência relacional e vetorial no mesmo banco de dados com transações ACID completas. ➔ Associado a [`specs/Ideias/migracao_postgresql_pgvector.md`](./Ideias/migracao_postgresql_pgvector.md)
+
+### ✅ Fase 5: Módulo de Finanças Pessoais Soberanas & Telemetria Orçamentária (Concluída)
+- [x] **Console de Finanças no Padrão Terminal Dark:** Painel monoespaçado com atalhos de teclado (`[N]` novo lançamento, `[F1/F2]` navegação mensal, `[E]` exportação CSV) e sticky header orçamentário. ➔ Associado a [`specs/Ideias/gerenciador_financas_soberanas_terminal.md`](./Ideias/gerenciador_financas_soberanas_terminal.md)
+- [x] **Lançamentos Telegráficos & Parser Determinístico:** Sanitizador resiliente aceitando ponto e vírgula, com conversão segura em `Decimal(0.01)` e zero arredondamento float. ➔ Suportado por [`adr_006_app_financas_local_first_cqrs.md`](./architeture/adr_006_app_financas_local_first_cqrs.md)
+- [x] **Extrato Mensal com Agregações CQRS:** Camada `selectors.py` com agregações SQL nativas (`Sum(...)`) e Soft Delete contábil (`ativo=False`).
+- [x] **Function Calling Financeiro para o Gemini:** Tools especializadas `TOOL-006_registrar_transacao_financeira` e `TOOL-007_consultar_extrato_financeiro` com travas anti-alucinação.
+- [x] Suíte ampliada para 78 testes automatizados com 100% de sucesso.
+
+### 🔮 Fase 6: Faturas de Cartão, Agendamento Futuro & Saldo Espectral (Planejada)
+- [ ] **Ingestão Soberana de Faturas em PDF:** Parser local-first extraindo compras de cartão diretamente de streams de PDF sem nuvem externa. ➔ Associado a [`specs/Ideias/faturas_cartao_agendamento_multimes.md`](./Ideias/faturas_cartao_agendamento_multimes.md)
+- [ ] **Arquitetura Bipartida (Zero Dupla Contagem):** Modelos `FaturaCartao` e `ItemFaturaCartao` isolados do extrato principal, associados por `OneToOneField`. ➔ Suportado por [`adr_007_faturas_cartao_agendamento_e_saldo_projetado.md`](./architeture/adr_007_faturas_cartao_agendamento_e_saldo_projetado.md)
+- [ ] **Agendamento Automático no Vencimento:** Lançamento consolidado único criado com `status='PREVISTO'` na data de vencimento da fatura com trava de unicidade no banco.
+- [ ] **Projeção de Saldo Espectral (CQRS):** Métricas paralelas de `saldo_efetivado` e `saldo_projetado` antecipando a liquidez do fim do mês.
+- [ ] **Modal HUD de Fatura em Terminal Dark (`[F4]`):** Janela de inspeção rápida com drag & drop de arquivo e conferência de itens.
 
 ---
 

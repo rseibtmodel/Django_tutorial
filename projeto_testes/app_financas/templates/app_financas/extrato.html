@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[SYS_FIN] Extrato &amp; Fluxo de Caixa // {{ mes_nome }} {{ ano_atual }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --terminal-bg: #06090e;
+            --panel-bg: #0d1117;
+            --panel-header: #090d13;
+            --neon-green: #00ff66;
+            --neon-red: #ff5555;
+            --neon-cyan: #58a6ff;
+            --neon-amber: #e3b341;
+            --text-muted: #8b949e;
+            --border-subtle: rgba(0, 255, 102, 0.2);
+            --border-subtle-red: rgba(255, 85, 85, 0.25);
+        }
+        body {
+            background-color: var(--terminal-bg);
+            color: #e6edf3;
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+            min-height: 100vh;
+        }
+        .terminal-panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            box-shadow: 0 0 25px rgba(0, 255, 102, 0.05);
+        }
+        .terminal-header {
+            background-color: var(--panel-header);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 12px 20px;
+            color: var(--neon-green);
+            font-size: 0.88rem;
+            letter-spacing: 0.5px;
+        }
+        .metric-tile {
+            background-color: var(--panel-header);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            padding: 12px 16px;
+            transition: border-color 0.2s;
+        }
+        .metric-tile:hover {
+            border-color: var(--neon-green);
+        }
+        .metric-val {
+            font-size: 1.45rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .metric-val-green { color: var(--neon-green); }
+        .metric-val-red { color: var(--neon-red); }
+        .metric-val-cyan { color: var(--neon-cyan); }
+        .metric-lbl {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+        .table-terminal {
+            background-color: var(--panel-header);
+            border-color: rgba(0, 255, 102, 0.12);
+            font-size: 0.84rem;
+        }
+        .table-terminal th {
+            background-color: #06090e;
+            color: var(--neon-green);
+            border-color: rgba(0, 255, 102, 0.2);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            letter-spacing: 0.5px;
+        }
+        .table-terminal td {
+            border-color: rgba(255, 255, 255, 0.04);
+            vertical-align: middle;
+        }
+        .badge-debit {
+            background-color: rgba(255, 85, 85, 0.15);
+            color: var(--neon-red);
+            border: 1px solid var(--border-subtle-red);
+            font-size: 0.70rem;
+            padding: 3px 6px;
+        }
+        .badge-credit {
+            background-color: rgba(0, 255, 102, 0.15);
+            color: var(--neon-green);
+            border: 1px solid var(--border-subtle);
+            font-size: 0.70rem;
+            padding: 3px 6px;
+        }
+        .val-num-debit {
+            color: var(--neon-red);
+            font-weight: 600;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+        .val-num-credit {
+            color: var(--neon-green);
+            font-weight: 600;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+        .btn-neon {
+            background-color: var(--neon-green);
+            color: #06090e;
+            font-weight: 700;
+            border: none;
+            letter-spacing: 0.5px;
+        }
+        .btn-neon:hover {
+            background-color: #00cc52;
+            color: #000000;
+        }
+        .btn-terminal-outline {
+            background-color: transparent;
+            color: var(--neon-green);
+            border: 1px solid var(--neon-green);
+            font-size: 0.80rem;
+        }
+        .btn-terminal-outline:hover {
+            background-color: rgba(0, 255, 102, 0.12);
+            color: #00ff66;
+        }
+        .btn-del-mini {
+            background: transparent;
+            color: #6e7681;
+            border: none;
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .btn-del-mini:hover {
+            color: var(--neon-red);
+            background: rgba(255, 85, 85, 0.1);
+        }
+        .cmd-bar-container {
+            background-color: #090d13;
+            border-top: 1px solid var(--border-subtle);
+            padding: 14px 20px;
+        }
+        .cmd-prompt {
+            color: var(--neon-green);
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+        .cmd-input {
+            background-color: #06090e;
+            border: 1px solid rgba(0, 255, 102, 0.3);
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 0.88rem;
+        }
+        .cmd-input:focus {
+            background-color: #06090e;
+            border-color: var(--neon-green);
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.25);
+        }
+        .hotkey-badge {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: #c9d1d9;
+            border-radius: 3px;
+            padding: 1px 5px;
+            font-size: 0.70rem;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+<body class="py-4">
+    <div class="container-fluid px-lg-5">
+        
+        <!-- Top Nav / Back Links -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-secondary small">&gt;&gt; CONSOLE_SISTEMA:</span>
+                <a href="{% url 'app_chatbot:painel' %}" class="btn btn-sm btn-terminal-outline py-1 px-2">
+                    &larr; [CHAT_WORKSPACE]
+                </a>
+                <a href="{% url 'app_chatbot:dashboard' %}" class="btn btn-sm btn-terminal-outline py-1 px-2">
+                    [TELEMETRIA_TOKENS]
+                </a>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <span class="small text-secondary">
+                    OPERADOR: <strong class="text-white">@{{ request.user.username }}</strong>
+                </span>
+                <a href="{% url 'app_financas:exportar_csv' %}?ano={{ ano_atual }}&mes={{ mes_atual }}{% if categoria_filtro %}&categoria={{ categoria_filtro }}{% endif %}" 
+                   class="btn btn-sm btn-terminal-outline py-1 px-2"
+                   title="Exportar extrato deste mês para planilha CSV">
+                   <span class="hotkey-badge">E</span> [EXPORTAR_CSV]
+                </a>
+            </div>
+        </div>
+
+        <!-- Alertas do Django Messages -->
+        {% if messages %}
+            <div class="mb-3">
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} bg-dark border-{% if message.tags == 'error' %}danger{% else %}success{% endif %} text-light py-2 px-3 small d-flex justify-content-between align-items-center" role="alert">
+                        <span>{{ message }}</span>
+                        <button type="button" class="btn-close btn-close-white btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Painel Central Terminal -->
+        <div class="terminal-panel mb-4">
+            
+            <!-- Header do Console -->
+            <div class="terminal-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div class="d-flex align-items-center gap-3">
+                    <span class="fw-bold">[SYS_FIN_v1.0] :: FLUXO_DE_CAIXA_LOCAL</span>
+                    <span class="badge bg-dark border border-success-subtle text-success small">
+                        COMPETÊNCIA: {{ mes_nome }} / {{ ano_atual }}
+                    </span>
+                </div>
+                
+                <!-- Navegação Mensal -->
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{% url 'app_financas:extrato' %}?ano={{ ano_anterior }}&mes={{ mes_anterior }}{% if categoria_filtro %}&categoria={{ categoria_filtro }}{% endif %}" 
+                       class="btn btn-sm btn-terminal-outline py-1 px-2"
+                       title="Atalho: F1 ou Seta para a Esquerda">
+                        <span class="hotkey-badge">F1</span> &larr; {{ ano_anterior }}-{{ mes_anterior|stringformat:"02d" }}
+                    </a>
+                    <span class="text-secondary small px-1">|</span>
+                    <a href="{% url 'app_financas:extrato' %}?ano={{ ano_proximo }}&mes={{ mes_proximo }}{% if categoria_filtro %}&categoria={{ categoria_filtro }}{% endif %}" 
+                       class="btn btn-sm btn-terminal-outline py-1 px-2"
+                       title="Atalho: F2 ou Seta para a Direita">
+                        {{ ano_proximo }}-{{ mes_proximo|stringformat:"02d" }} &rarr; <span class="hotkey-badge">F2</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Dashboard de Indicadores / Sticky Header Orçamentário -->
+            <div class="p-3 border-bottom border-secondary border-opacity-25">
+                <div class="row g-3">
+                    <div class="col-12 col-md-3">
+                        <div class="metric-tile">
+                            <div class="metric-lbl">SALDO DISPONÍVEL (LÍQUIDO)</div>
+                            <div class="metric-val {% if balanco.saldo_liquido >= 0 %}metric-val-green{% else %}metric-val-red{% endif %}">
+                                {% if balanco.saldo_liquido >= 0 %}+{% endif %}R$ {{ balanco.saldo_liquido }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <div class="metric-tile">
+                            <div class="metric-lbl">TOTAL RECEITAS (CRÉDITOS)</div>
+                            <div class="metric-val metric-val-green">
+                                +R$ {{ balanco.total_receitas }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <div class="metric-tile">
+                            <div class="metric-lbl">TOTAL DESPESAS (DÉBITOS)</div>
+                            <div class="metric-val metric-val-red">
+                                -R$ {{ balanco.total_despesas }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <div class="metric-tile">
+                            <div class="metric-lbl">TAXA DE POUPANÇA</div>
+                            <div class="metric-val metric-val-cyan">
+                                {{ balanco.taxa_poupanca }}%
+                                <span class="small text-secondary fw-normal fs-6">
+                                    ({{ balanco.total_lancamentos }} transações)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtro de Categoria Opcional -->
+            {% if categorias_disponiveis %}
+            <div class="px-3 py-2 bg-dark bg-opacity-50 border-bottom border-secondary border-opacity-25 d-flex align-items-center gap-2 overflow-auto">
+                <span class="small text-secondary text-uppercase" style="font-size: 0.70rem;">Filtrar Categoria:</span>
+                <a href="{% url 'app_financas:extrato' %}?ano={{ ano_atual }}&mes={{ mes_atual }}" 
+                   class="badge {% if not categoria_filtro %}bg-success text-dark{% else %}bg-secondary text-light{% endif %} text-decoration-none py-1 px-2">
+                    Todas
+                </a>
+                {% for cat in categorias_disponiveis %}
+                    <a href="{% url 'app_financas:extrato' %}?ano={{ ano_atual }}&mes={{ mes_atual }}&categoria={{ cat }}" 
+                       class="badge {% if categoria_filtro == cat %}bg-success text-dark{% else %}bg-dark border border-secondary text-secondary{% endif %} text-decoration-none py-1 px-2">
+                        {{ cat }}
+                    </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Tabela de Lançamentos -->
+            <div class="table-responsive">
+                <table class="table table-dark table-hover table-terminal mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 70px;">#ID</th>
+                            <th style="width: 110px;">DATA</th>
+                            <th style="width: 90px;">TIPO</th>
+                            <th style="width: 140px;" class="text-end">VALOR (R$)</th>
+                            <th style="width: 130px;">CATEGORIA</th>
+                            <th>DESCRIÇÃO DO LANÇAMENTO</th>
+                            <th style="width: 60px;" class="text-center">AÇÃO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for l in lancamentos %}
+                        <tr>
+                            <td class="text-secondary font-monospace">#{{ l.id|stringformat:"04d" }}</td>
+                            <td class="font-monospace text-light">{{ l.data_competencia|date:"d/m/Y" }}</td>
+                            <td>
+                                {% if l.tipo == 'RECEITA' %}
+                                    <span class="badge badge-credit">[CRED]</span>
+                                {% else %}
+                                    <span class="badge badge-debit">[DEBIT]</span>
+                                {% endif %}
+                            </td>
+                            <td class="{% if l.tipo == 'RECEITA' %}val-num-credit{% else %}val-num-debit{% endif %}">
+                                {% if l.tipo == 'RECEITA' %}+{% else %}-{% endif %} {{ l.valor }}
+                            </td>
+                            <td>
+                                <span class="badge bg-dark border border-secondary-subtle text-info small">
+                                    {{ l.categoria }}
+                                </span>
+                            </td>
+                            <td class="text-light">{{ l.descricao }}</td>
+                            <td class="text-center">
+                                <form action="{% url 'app_financas:excluir' l.id %}" method="POST" class="d-inline" onsubmit="return confirm('Confirmar inativação contábil do lançamento #{{ l.id }} ({{ l.descricao }})?');">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="ano" value="{{ ano_atual }}">
+                                    <input type="hidden" name="mes" value="{{ mes_atual }}">
+                                    <button type="submit" class="btn-del-mini" title="Excluir Lançamento (Soft Delete)">
+                                        &#10005;
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-secondary">
+                                <div class="mb-2">// NENHUM LANÇAMENTO REGISTRADO NESTA COMPETÊNCIA //</div>
+                                <div class="small">Utilize a barra de comando abaixo para lançar despesas ou receitas instantaneamente.</div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Terminal de Entrada Telegráfica (Barra de Comando Inferior) -->
+            <div class="cmd-bar-container">
+                <form action="{% url 'app_financas:criar' %}" method="POST" id="form-comando">
+                    {% csrf_token %}
+                    <input type="hidden" name="ano" value="{{ ano_atual }}">
+                    <input type="hidden" name="mes" value="{{ mes_atual }}">
+                    <div class="d-flex flex-column flex-md-row align-items-md-center gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="cmd-prompt">[CMD] &gt;</span>
+                            <span class="hotkey-badge d-none d-md-inline" title="Pressione N a qualquer momento para focar">N</span>
+                        </div>
+                        <div class="flex-grow-1 position-relative">
+                            <input type="text" 
+                                   name="comando_telegrafico" 
+                                   id="input-comando"
+                                   class="form-control cmd-input" 
+                                   placeholder="Ex: /gasto 45.00 almoco executivo [alimentacao] ou /receita 1500.00 freela [projetos]"
+                                   autocomplete="off"
+                                   autofocus
+                                   required>
+                        </div>
+                        <button type="submit" class="btn btn-neon px-3 py-1 btn-sm">
+                            LANÇAR [ENTER]
+                        </button>
+                    </div>
+                </form>
+                <div class="d-flex justify-content-between align-items-center mt-2 text-secondary" style="font-size: 0.70rem;">
+                    <div>
+                        SINTAXE: <code>/gasto &lt;valor&gt; &lt;descrição&gt; [categoria]</code> | <code>/receita &lt;valor&gt; &lt;descrição&gt; [categoria]</code>
+                    </div>
+                    <div>
+                        ATALHOS: <span class="hotkey-badge">F1</span> Mês Anterior &bull; <span class="hotkey-badge">F2</span> Próximo Mês &bull; <span class="hotkey-badge">N</span> Novo Lançamento &bull; <span class="hotkey-badge">E</span> Exportar CSV
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Script de Atalhos de Teclado -->
+    <script>
+        document.addEventListener('keydown', function(event) {
+            const inputComando = document.getElementById('input-comando');
+            const isInputFocused = (document.activeElement === inputComando);
+            const hasModifier = event.ctrlKey || event.metaKey || event.altKey;
+
+            // Tecla F1 ou Seta para a esquerda (quando fora do input e sem modificador) -> Mês Anterior
+            if (event.key === 'F1' || (!isInputFocused && !hasModifier && event.key === 'ArrowLeft')) {
+                event.preventDefault();
+                window.location.href = "{% url 'app_financas:extrato' %}?ano={{ ano_anterior }}&mes={{ mes_anterior }}{% if categoria_filtro %}&categoria={{ categoria_filtro }}{% endif %}";
+            }
+
+            // Tecla F2 ou Seta para a direita (quando fora do input e sem modificador) -> Próximo Mês
+            if (event.key === 'F2' || (!isInputFocused && !hasModifier && event.key === 'ArrowRight')) {
+                event.preventDefault();
+                window.location.href = "{% url 'app_financas:extrato' %}?ano={{ ano_proximo }}&mes={{ mes_proximo }}{% if categoria_filtro %}&categoria={{ categoria_filtro }}{% endif %}";
+            }
+
+            // Tecla N (quando fora do input e sem modificador) -> Foca no campo de comando telegráfico
+            if (!isInputFocused && !hasModifier && (event.key === 'n' || event.key === 'N')) {
+                event.preventDefault();
+                inputComando.focus();
+                inputComando.select();
+            }
+
+            // Tecla E (quando fora do input e sem modificador) -> Download CSV
+            if (!isInputFocused && !hasModifier && (event.key === 'e' || event.key === 'E')) {
+                event.preventDefault();
+                window.location.href = "{% url 'app_financas:exportar_csv' %}?ano={{ ano_atual }}&mes={{ mes_atual }}{% if categoria_filtro %}&categoria={{ categoria_filtro }}{% endif %}";
+            }
+
+            // Tecla Escape dentro do input -> Limpa o campo
+            if (isInputFocused && event.key === 'Escape') {
+                inputComando.value = '';
+                inputComando.blur();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+{
+  "versao_schema": "2.0",
+  "id": "ALQ-26110402",
+  "data_transmutacao": "2026-11-04",
+  "alquimista": "Agente 10 (Mestre da Convergência Criativa)",
+  "status": "ouro",
+  "score": 9.3,
+  "metadados": {
+    "origem": "brainstorm_multiagente",
+    "ideia_original": "Adicionar transações de meses diferentes, programar despesas futuras e carregar fatura de cartão de crédito em PDF com janela de consulta e despesa única agendada no vencimento",
+    "anomalia_oraculo": "A Bipartição Criptográfica do Cartão (O Espelho e a Guilhotina) fundida ao Saldo Espectral com Causalidade Multimês",
+    "classificacao": "ouro"
+  },
+  "score_detalhado": {
+    "assimetria_valor": 9.4,
+    "singularidade": 9.2,
+    "viabilidade_custo": 9.0,
+    "formula": "Score = (0.40 * Assimetria) + (0.40 * Singularidade) + (0.20 * Viabilidade)",
+    "score_final": 9.3
+  },
+  "proposta_lapidada": {
+    "titulo": "Console de Faturas de Cartão & Fluxo de Caixa Multidimensional com Saldo Espectral",
+    "nucleo_intransgressivel": "Ingestão local e soberana de faturas de cartão de crédito em PDF com inspeção detalhada em modal HUD isolado, associada à criação determinística de uma despesa única agendada para a data de vencimento no extrato geral, sem dupla contagem e com projeção de fluxo de caixa futuro.",
+    "pilares_engenharia": [
+      "Modelagem bipartida: entidades FaturaCartao e ItemFaturaCartao desacopladas do LancamentoFinanceiro para evitar poluição do extrato geral",
+      "Soft Delete e transações atômicas com relacionamento OneToOne entre a fatura e a despesa consolidada agendada",
+      "Parser de PDF local-first utilizando extração de streams e regex com tolerância a múltiplos layouts bancários",
+      "Trava de idempotência via UniqueConstraint no banco (usuario, identificador_cartao, ano_referencia, mes_referencia) para impedir agendamentos duplicados",
+      "CQRS com cálculo duplo de métricas: Saldo Efetivado (realizado até hoje) e Saldo Espectral Projetado (incluindo provisões futuras e faturas a vencer)"
+    ],
+    "ergonomia_ux": {
+      "estetica": "Terminal Dark (#06090e) & Verde Neon (#00ff66) com acentos Âmbar (#e3b341) para provisões e Ciano (#58a6ff) para faturas",
+      "modal_hud": "Gaveta de inspeção de fatura [F4] com tabela de compras e botão de confirmação e agendamento em 1 clique",
+      "navegacao_temporal": "Acesso desimpedido a qualquer competência passada ou futura via hotkeys [F1/F2] ou prompt /extrato YYYY-MM"
+    }
+  },
+  "contramedidas_risco": [
+    {
+      "risco": "Dupla contagem contábil entre compras de cartão e despesa da fatura",
+      "solucao": "Compras do cartão não entram no extrato geral; apenas o débito único consolidado no dia do vencimento é lançado."
+    },
+    {
+      "risco": "Duplo clique ou reimportação acidental gerando faturas duplicadas",
+      "solucao": "UniqueConstraint composta no SQLite a nível de banco garantindo idempotência absoluta."
+    },
+    {
+      "risco": "Divergência de layout em PDFs bancários",
+      "solucao": "Janela de pré-visualização no modal que permite ao operador inspecionar e ajustar data de vencimento e total antes da confirmação."
+    }
+  ],
+  "handoff_recomendado": {
+    "proximo_agente": "/architect",
+    "acao": "Elaboração do ADR 007 formalizando as entidades FaturaCartao, ItemFaturaCartao, campos de status e fluxo de provisões futuras.",
+    "pasta_destino": "specs/Ideias/faturas_cartao_agendamento_multimes.md"
+  }
+}
+
